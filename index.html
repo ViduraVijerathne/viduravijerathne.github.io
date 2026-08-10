@@ -40,15 +40,45 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Preloader -->
+  <div id="global-preloader" class="global-preloader">
+    <div class="preloader-content">
+      <svg viewBox="0 0 100 100" class="preloader-icon">
+        <!-- Mechanical: Gear Outer Ring -->
+        <g class="gear-ring">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#1d1d1f" stroke-width="4" stroke-dasharray="12 12" />
+          <circle cx="50" cy="50" r="34" fill="none" stroke="#1d1d1f" stroke-width="2" />
+        </g>
+        <!-- Robotics: Neural Nodes -->
+        <g class="network-nodes">
+          <line x1="50" y1="50" x2="50" y2="16" stroke="#0071e3" stroke-width="2" />
+          <line x1="50" y1="50" x2="20" y2="68" stroke="#0071e3" stroke-width="2" />
+          <line x1="50" y1="50" x2="80" y2="68" stroke="#0071e3" stroke-width="2" />
+          <circle cx="50" cy="16" r="4" fill="#0071e3" class="node-dot" />
+          <circle cx="20" cy="68" r="4" fill="#0071e3" class="node-dot" />
+          <circle cx="80" cy="68" r="4" fill="#0071e3" class="node-dot" />
+        </g>
+        <!-- Software: Code Brackets -->
+        <g class="code-brackets" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M42 42 L32 50 L42 58" class="bracket-left" />
+          <path d="M58 42 L68 50 L58 58" class="bracket-right" />
+        </g>
+      </svg>
+      <div class="preloader-text">
+        <span class="loading-label">INITIALIZING SYSTEM</span>
+        <div class="loading-bar-container">
+          <div class="loading-bar-progress" id="loading-bar-progress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Global Glass Navigation -->
   <header class="global-nav" id="global-nav">
     <div class="nav-container">
       <a href="#" class="brand-logo">
         <span>VIDURA</span>
-        <span class="brand-badge">
-          <span class="status-dot"></span> UWU MET '26
-        </span>
       </a>
 
       <nav>
@@ -301,17 +331,9 @@
             <div class="projects-image-container" id="project-1-image">
               <img src="images/projects/robot-arm.jpg" alt="3-Axis Robot Arm">
             </div>
-            <!-- Project 2 Image 1 (Dial) -->
-            <div class="projects-image-container" id="project-2-image-1" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <!-- Project 2 Image (Dial) -->
+            <div class="projects-image-container" id="project-2-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/pid-dial.jpg" alt="Precision PID Motor Controller">
-            </div>
-            <!-- Project 2 Image 2 (Internal) -->
-            <div class="projects-image-container" id="project-2-image-2" style="position: absolute; opacity: 0; transform: scale(0.9);">
-              <img src="images/projects/pid-internal.jpg" alt="PID Internal Wiring">
-            </div>
-            <!-- Project 2 Image 3 (App Mockup) -->
-            <div class="iphone-mockup" id="project-2-image-3" style="position: absolute; opacity: 0; transform: scale(0.9);">
-              <img src="images/projects/pid-app.png" alt="PID Controller Mobile App">
             </div>
           </div>
 
@@ -405,37 +427,21 @@
           
           <!-- Left Column: Fixed Image Viewer -->
           <div class="projects-left-column">
-            <!-- ERP Dashboard (Image 1) -->
-            <div class="projects-image-container" id="erp-image-1">
+            <!-- ERP Dashboard -->
+            <div class="projects-image-container" id="erp-image">
               <img src="images/projects/erp-1.png" alt="Thennakoon Ready Mix ERP Dashboard">
             </div>
-            <!-- ERP Stock Light (Image 2) -->
-            <div class="projects-image-container" id="erp-image-2" style="position: absolute; opacity: 0; transform: scale(0.9);">
-              <img src="images/projects/erp-2.png" alt="Stock Management Light Mode">
-            </div>
-            <!-- ERP Stock Dark (Image 3) -->
-            <div class="projects-image-container" id="erp-image-3" style="position: absolute; opacity: 0; transform: scale(0.9);">
-              <img src="images/projects/erp-3.png" alt="Stock Management Dark Mode">
-            </div>
-            <!-- Bring Me (Image 1) -->
-            <div class="projects-image-container" id="bringme-image" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <!-- Bring Me -->
+            <div class="projects-image-container" id="bringme-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/bring-me.png" alt="Bring Me Food Ordering App">
             </div>
-            <!-- GymFit (Image 1) -->
-            <div class="projects-image-container" id="gymfit-image-1" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <!-- GymFit -->
+            <div class="projects-image-container" id="gymfit-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/gymfit-1.png" alt="GymFit Dashboard">
             </div>
-            <!-- GymFit (Image 2) -->
-            <div class="projects-image-container" id="gymfit-image-2" style="position: absolute; opacity: 0; transform: scale(0.9);">
-              <img src="images/projects/gymfit-2.png" alt="GymFit POS System">
-            </div>
-            <!-- NexPOS (Image 1) -->
-            <div class="projects-image-container" id="nexpos-image-1" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <!-- NexPOS -->
+            <div class="projects-image-container" id="nexpos-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/nexpos-1.png" alt="NexPOS Business Insights">
-            </div>
-            <!-- NexPOS (Image 2) -->
-            <div class="projects-image-container" id="nexpos-image-2" style="position: absolute; opacity: 0; transform: scale(0.9);">
-              <img src="images/projects/nexpos-2.png" alt="NexPOS Point of Sale">
             </div>
           </div>
 
@@ -579,15 +585,15 @@
           <!-- Left Column: Pinned Images -->
           <div class="projects-left-column">
             <!-- Project 1 (Image) -->
-            <div class="projects-image-container" id="os-python-image" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <div class="projects-image-container" id="os-python-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/opensource-python.jpg" alt="YouTube Downloader Python Tool">
             </div>
             <!-- Project 2 (Image) -->
-            <div class="projects-image-container" id="os-java-image" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <div class="projects-image-container" id="os-java-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/opensource-java.jpg" alt="Image2Json Java Library">
             </div>
             <!-- Project 3 (Image) -->
-            <div class="projects-image-container" id="os-ai-image" style="position: absolute; opacity: 0; transform: scale(0.9);">
+            <div class="projects-image-container" id="os-ai-image" style="opacity: 0; transform: scale(0.9);">
               <img src="images/projects/opensource-ai.jpg" alt="AI Self-Driving Car Model">
             </div>
           </div>

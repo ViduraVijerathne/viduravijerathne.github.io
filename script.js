@@ -2,6 +2,34 @@
    Apple-Style Scrollytelling & Interaction Engine (GSAP + ScrollTrigger)
    ========================================================================== */
 
+/* ==========================================================================
+   Global Preloader Engine
+   ========================================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const preloader = document.getElementById("global-preloader");
+  const progressBar = document.getElementById("loading-bar-progress");
+  
+  if (preloader && progressBar) {
+    let progress = 0;
+    // Simulate loading progress
+    const interval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress > 90) progress = 90; // Hold at 90% until fully loaded
+      progressBar.style.width = progress + "%";
+    }, 100);
+
+    window.addEventListener("load", () => {
+      clearInterval(interval);
+      progressBar.style.width = "100%";
+      setTimeout(() => {
+        preloader.classList.add("hidden");
+        // Remove from DOM after fade out transition (0.8s in CSS)
+        setTimeout(() => preloader.remove(), 800);
+      }, 500); // slight delay at 100% for smooth effect
+    });
+  }
+});
+
 // Register GSAP ScrollTrigger Plugin
 gsap.registerPlugin(ScrollTrigger);
 
@@ -121,37 +149,43 @@ function initHeroScrollytelling() {
     .to(scrollHint, { opacity: 1, y: 0, duration: 0.5 }, "-=0.3");
 
   // 2. Master Scroll-Driven Pinning Timeline
-  const heroTl = gsap.timeline({
-    scrollTrigger: {
-      trigger: pinWrapper,
-      start: "top top",
-      end: "+=150%", 
-      scrub: 1.0,
-      pin: true,
-      anticipatePin: 1
-    }
+  let mm = gsap.matchMedia();
+
+  mm.add("(min-width: 769px)", () => {
+    const heroTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: pinWrapper,
+        start: "top top",
+        end: "+=150%", 
+        scrub: 1.0,
+        pin: true,
+        anticipatePin: 1
+      }
+    });
+
+    heroTl
+      .to(storyCard, { opacity: 0, y: -80, scale: 0.94, duration: 0.3, ease: "power2.in" }, 0)
+      .to(bgImg, { scale: 3.5, xPercent: 40, transformOrigin: "left center", duration: 0.8, ease: "power1.inOut" }, 0)
+      .to(curtainOverlay, { opacity: 1, duration: 0.2, ease: "power2.in" }, 0.8);
   });
 
-  heroTl
-    .to(storyCard, {
-      opacity: 0,
-      y: -80,
-      scale: 0.94,
-      duration: 0.3,
-      ease: "power2.in"
-    }, 0)
-    .to(bgImg, {
-      scale: 3.5,
-      xPercent: 40,
-      transformOrigin: "left center",
-      duration: 0.8,
-      ease: "power1.inOut"
-    }, 0)
-    .to(curtainOverlay, {
-      opacity: 1, // Fade to black to seamlessly match Who I Am dark canvas
-      duration: 0.2,
-      ease: "power2.in"
-    }, 0.8);
+  mm.add("(max-width: 768px)", () => {
+    const heroTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: pinWrapper,
+        start: "top top",
+        end: "+=100%", // Slightly shorter pin on mobile
+        scrub: 1.0,
+        pin: true,
+        anticipatePin: 1
+      }
+    });
+
+    heroTl
+      .to(storyCard, { opacity: 0, y: -40, scale: 0.96, duration: 0.3, ease: "power2.in" }, 0)
+      .to(bgImg, { scale: 1.4, xPercent: 0, transformOrigin: "center center", duration: 0.8, ease: "power1.inOut" }, 0)
+      .to(curtainOverlay, { opacity: 1, duration: 0.2, ease: "power2.in" }, 0.8);
+  });
 }
 
 /**
@@ -259,7 +293,27 @@ function initWhoIAmScrollytelling() {
   tl.fromTo(seg4, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.0 }, 7.5)
     .to(seg4, { opacity: 0, y: -40, duration: 1.0 }, 8.8);
   // Seg 5 (White Outro fades over the dark canvas to seamlessly exit)
-  tl.fromTo(whiteOutro, { opacity: 0 }, { opacity: 1, duration: 1.0 }, 9.0);
+  tl.fromTo(whiteOutro, { opacity: 0 }, { opacity: 1, duration: 0.5 }, 8.0);
+
+  // Letter by letter animation for the goal quote
+  const goalQuote = document.querySelector(".whoiam-goal-quote");
+  let goalLetters = [];
+  if (goalQuote) {
+    const text = goalQuote.textContent.trim();
+    goalQuote.innerHTML = "";
+    text.split("").forEach((char) => {
+      if (char === " " || char === "\n" || char === "\r") {
+        goalQuote.appendChild(document.createTextNode(char));
+      } else {
+        const span = document.createElement("span");
+        span.textContent = char;
+        goalQuote.appendChild(span);
+        goalLetters.push(span);
+      }
+    });
+    // The text hides (fades out) letter by letter as the user scrolls to the end of the section
+    tl.fromTo(goalLetters, { opacity: 1 }, { opacity: 0.05, duration: 1.0, stagger: 0.02 }, 8.8);
+  }
 }
 
 /**
@@ -429,9 +483,7 @@ function initProjectsScrollytelling() {
   const p1Info2 = document.getElementById("project-1-info-2");
   const p1Info3 = document.getElementById("project-1-info-3");
 
-  const p2Image1 = document.getElementById("project-2-image-1");
-  const p2Image2 = document.getElementById("project-2-image-2");
-  const p2Image3 = document.getElementById("project-2-image-3");
+  const p2Image = document.getElementById("project-2-image");
   const p2Info1 = document.getElementById("project-2-info-1");
   const p2Info2 = document.getElementById("project-2-info-2");
   const p2Info3 = document.getElementById("project-2-info-3");
@@ -467,32 +519,26 @@ function initProjectsScrollytelling() {
     .to(p1Info3, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(p1Info3, { opacity: 0, y: -20, duration: 1 }, "+=1"); // hide completely
 
-  // 4. Fade out project 1 image and transition to Project 2 (Image 1 & Info 1)
+  // 4. Fade out project 1 image and transition to Project 2
   tl.to(p1Image, { opacity: 0, scale: 0.9, duration: 1 })
-    .to(p2Image1, { opacity: 1, scale: 1, duration: 1 }, "<") // Project 2 dial image in
+    .to(p2Image, { opacity: 1, scale: 1, duration: 1 }, "<")
     .to(p2Info1, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(p2Info1, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 5. Alternate to Image 2 (Internal) & Info 2
-  tl.to(p2Image1, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(p2Image2, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(p2Info2, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 5. Info 2
+  tl.to(p2Info2, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(p2Info2, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 6. Alternate back to Image 1 (Dial) & Info 3
-  tl.to(p2Image2, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(p2Image1, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(p2Info3, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 6. Info 3
+  tl.to(p2Info3, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(p2Info3, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 7. Transition to iPhone Mockup (Image 3) & Info 4
-  tl.to(p2Image1, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(p2Image3, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(p2Info4, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 7. Info 4
+  tl.to(p2Info4, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(p2Info4, { opacity: 0, y: -20, duration: 1 }, "+=1.5");
 
   // 8. Fade out project 2 completely (prep for future project)
-  tl.to([p2Image3], { opacity: 0, duration: 1 });
+  tl.to([p2Image], { opacity: 0, duration: 1 });
 }
 
 /**
@@ -531,9 +577,7 @@ function initSoftwareProjectsScrollytelling() {
   const headline = document.getElementById("software-projects-headline");
   const splitLayout = document.getElementById("software-projects-split-layout");
   
-  const erpImage1 = document.getElementById("erp-image-1");
-  const erpImage2 = document.getElementById("erp-image-2");
-  const erpImage3 = document.getElementById("erp-image-3");
+  const erpImage = document.getElementById("erp-image");
   const erpInfo1 = document.getElementById("erp-info-1");
   const erpInfo2 = document.getElementById("erp-info-2");
   const erpInfo3 = document.getElementById("erp-info-3");
@@ -543,14 +587,12 @@ function initSoftwareProjectsScrollytelling() {
   const bringmeInfo2 = document.getElementById("bringme-info-2");
   const bringmeInfo3 = document.getElementById("bringme-info-3");
 
-  const gymfitImage1 = document.getElementById("gymfit-image-1");
-  const gymfitImage2 = document.getElementById("gymfit-image-2");
+  const gymfitImage = document.getElementById("gymfit-image");
   const gymfitInfo1 = document.getElementById("gymfit-info-1");
   const gymfitInfo2 = document.getElementById("gymfit-info-2");
   const gymfitInfo3 = document.getElementById("gymfit-info-3");
 
-  const nexposImage1 = document.getElementById("nexpos-image-1");
-  const nexposImage2 = document.getElementById("nexpos-image-2");
+  const nexposImage = document.getElementById("nexpos-image");
   const nexposInfo1 = document.getElementById("nexpos-info-1");
   const nexposInfo2 = document.getElementById("nexpos-info-2");
   const nexposInfo3 = document.getElementById("nexpos-info-3");
@@ -575,24 +617,20 @@ function initSoftwareProjectsScrollytelling() {
 
   // 2. Bring in Split Layout & Image 1 & Info 1
   tl.to(splitLayout, { opacity: 1, duration: 1 })
-    .to(erpImage1, { opacity: 1, scale: 1, duration: 1 }, "<")
+    .to(erpImage, { opacity: 1, scale: 1, duration: 1 }, "<")
     .to(erpInfo1, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(erpInfo1, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 3. Alternate to Image 2 (Light Mode Stock) & Info 2
-  tl.to(erpImage1, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(erpImage2, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(erpInfo2, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 3. Info 2
+  tl.to(erpInfo2, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(erpInfo2, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 4. Alternate to Image 3 (Dark Mode Stock) & Info 3
-  tl.to(erpImage2, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(erpImage3, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(erpInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 4. Info 3
+  tl.to(erpInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(erpInfo3, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
   // 5. Transition to Bring Me Project
-  tl.to(erpImage3, { opacity: 0, scale: 0.9, duration: 1 }, "<")
+  tl.to(erpImage, { opacity: 0, scale: 0.9, duration: 1 }, "<")
     .to(bringmeImage, { opacity: 1, scale: 1, duration: 1 }, "<")
     .to(bringmeInfo1, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(bringmeInfo1, { opacity: 0, y: -20, duration: 1 }, "+=1");
@@ -605,40 +643,36 @@ function initSoftwareProjectsScrollytelling() {
   tl.to(bringmeInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(bringmeInfo3, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 8. Transition to GymFit Project (Image 1 & Info 1)
+  // 8. Transition to GymFit Project
   tl.to(bringmeImage, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(gymfitImage1, { opacity: 1, scale: 1, duration: 1 }, "<")
+    .to(gymfitImage, { opacity: 1, scale: 1, duration: 1 }, "<")
     .to(gymfitInfo1, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(gymfitInfo1, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 9. GymFit Info 2 (Keep Image 1)
+  // 9. GymFit Info 2
   tl.to(gymfitInfo2, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(gymfitInfo2, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 10. GymFit Info 3 (Switch to Image 2 - POS)
-  tl.to(gymfitImage1, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(gymfitImage2, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(gymfitInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 10. GymFit Info 3
+  tl.to(gymfitInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(gymfitInfo3, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 11. Transition to NexPOS Project (Image 1 & Info 1)
-  tl.to(gymfitImage2, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(nexposImage1, { opacity: 1, scale: 1, duration: 1 }, "<")
+  // 11. Transition to NexPOS Project
+  tl.to(gymfitImage, { opacity: 0, scale: 0.9, duration: 1 }, "<")
+    .to(nexposImage, { opacity: 1, scale: 1, duration: 1 }, "<")
     .to(nexposInfo1, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(nexposInfo1, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 12. NexPOS Info 2 (Keep Image 1)
+  // 12. NexPOS Info 2
   tl.to(nexposInfo2, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(nexposInfo2, { opacity: 0, y: -20, duration: 1 }, "+=1");
 
-  // 13. NexPOS Info 3 (Switch to Image 2 - POS)
-  tl.to(nexposImage1, { opacity: 0, scale: 0.9, duration: 1 }, "<")
-    .to(nexposImage2, { opacity: 1, scale: 1, duration: 1 }, "<")
-    .to(nexposInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
+  // 13. NexPOS Info 3
+  tl.to(nexposInfo3, { opacity: 1, y: 0, duration: 1 }, "<")
     .to(nexposInfo3, { opacity: 0, y: -20, duration: 1 }, "+=1.5");
 
   // 14. Fade out completely
-  tl.to([nexposImage2], { opacity: 0, duration: 1 });
+  tl.to([nexposImage], { opacity: 0, duration: 1 });
 }
 
 /**
